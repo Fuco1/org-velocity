@@ -152,6 +152,13 @@ See the documentation for `org-capture-templates'."
   :group 'org-velocity
   :type (or (get 'org-capture-templates 'custom-type) 'list))
 
+(defcustom org-velocity-edit-entry nil
+  "If non-nil, visit the entry in indirect buffer.
+
+Otherwise just go to its definition normally."
+  :group 'org-velocity
+  :type 'boolean)
+
 (defun org-velocity-grab-preview ()
   "Grab preview of a subtree.
 The length of the preview is determined by `window-width'.
@@ -303,25 +310,28 @@ use it."
 
 (defun org-velocity-edit-entry (heading)
   "Edit entry at HEADING in an indirect buffer."
-  (let ((winconf (current-window-configuration)))
-    (let ((buffer (org-velocity-make-indirect-buffer heading)))
-      (with-current-buffer buffer
-        (let ((org-inhibit-startup t))
-          (org-mode))
-        (setq org-velocity-saved-winconf winconf)
-        (goto-char (org-velocity-heading-position heading))
-        (narrow-to-region (point)
-                          (save-excursion
-                            (org-end-of-subtree t)
-                            (point)))
-        (goto-char (point-min))
-        (add-hook 'org-ctrl-c-ctrl-c-hook 'org-velocity-dismiss nil t))
-      (pop-to-buffer buffer)
-      (set (make-local-variable 'header-line-format)
-           (format "%s Use C-c C-c to finish."
-                   (abbreviate-file-name
-                    (buffer-file-name
-                     (org-velocity-heading-buffer heading))))))))
+  (if org-velocity-edit-entry
+      (let ((winconf (current-window-configuration)))
+        (let ((buffer (org-velocity-make-indirect-buffer heading)))
+          (with-current-buffer buffer
+            (let ((org-inhibit-startup t))
+              (org-mode))
+            (setq org-velocity-saved-winconf winconf)
+            (goto-char (org-velocity-heading-position heading))
+            (narrow-to-region (point)
+                              (save-excursion
+                                (org-end-of-subtree t)
+                                (point)))
+            (goto-char (point-min))
+            (add-hook 'org-ctrl-c-ctrl-c-hook 'org-velocity-dismiss nil t))
+          (pop-to-buffer buffer)
+          (set (make-local-variable 'header-line-format)
+               (format "%s Use C-c C-c to finish."
+                       (abbreviate-file-name
+                        (buffer-file-name
+                         (org-velocity-heading-buffer heading)))))))
+    (pop-to-buffer (org-velocity-heading-buffer heading))
+    (goto-char (org-velocity-heading-position heading))))
 
 (defun org-velocity-dismiss ()
   "Save current entry and close indirect buffer."
