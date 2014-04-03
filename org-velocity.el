@@ -181,12 +181,12 @@ Replace all contiguous whitespace with single spaces."
 
 (defstruct org-velocity-heading buffer position name level preview)
 
-(defsubst org-velocity-nearest-heading (position)
+(defun org-velocity-nearest-heading (position)
   "Return last heading at POSITION.
 If there is no last heading, return nil."
   (save-excursion
     (goto-char position)
-    (re-search-backward org-velocity-heading-regexp)
+    (org-back-to-heading 'invisible-ok)
     (let ((components (org-heading-components)))
       (make-org-velocity-heading
        :buffer (current-buffer)
@@ -373,11 +373,10 @@ use it."
       (while (and hints (re-search-forward search nil t))
         (let ((match (org-velocity-nearest-heading (point))))
           (org-velocity-present-match
-           :hint (unless hide-hints (car hints))
+           :hint (unless hide-hints (pop hints))
            :match match)
           (push match matches))
-        (setq hints (cdr hints))
-        (unless (re-search-forward org-velocity-heading-regexp nil t)
+        (unless (outline-next-heading)
           (return))))
     (nreverse matches)))
 
@@ -395,9 +394,8 @@ use it."
        (setq org-map-continue-from
              (save-excursion
                (goto-char (line-end-position))
-               (if (re-search-forward org-velocity-heading-regexp nil t)
-                   (line-end-position)
-                 (point-max))))
+               (or (outline-next-heading)
+                   (point-max))))
        (when (loop for word in keywords
                    always (save-excursion
                             (re-search-forward
