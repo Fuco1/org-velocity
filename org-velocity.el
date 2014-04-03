@@ -152,25 +152,32 @@ See the documentation for `org-capture-templates'."
   :group 'org-velocity
   :type (or (get 'org-capture-templates 'custom-type) 'list))
 
-(defsubst org-velocity-grab-preview ()
+(defun org-velocity-grab-preview ()
   "Grab preview of a subtree.
 The length of the preview is determined by `window-width'.
 
 Replace all contiguous whitespace with single spaces."
-  (let ((start (progn
-                 (forward-line 1)
-                 (if (looking-at org-property-start-re)
-                     (re-search-forward org-property-end-re)
-                   (1- (point))))))
-    (mapconcat
-     #'identity
-     (split-string
-      (buffer-substring-no-properties
-       start
-       (min
-        (+ start (window-width))
-        (point-max))))
-     " ")))
+  (ignore-errors ;; I don't know where it errors, but we should probably investigate
+    (save-excursion
+      (let* ((start (org-end-of-meta-data-and-drawers))
+             (basic-text (replace-regexp-in-string
+                          "\\s-+"
+                          " "
+                          (buffer-substring-no-properties
+                           start
+                           (min
+                            (+ start (window-width))
+                            (point-max)
+                            (save-excursion
+                              (outline-next-heading)
+                              (point))))))
+             (delinked-text (with-temp-buffer
+                              (insert basic-text)
+                              (goto-char (point-min))
+                              (while (re-search-forward "\\[\\[.*?\\]\\[\\(.*?\\)\\]\\]" nil t)
+                                (replace-match "(link):\\1"))
+                              (buffer-string))))
+        delinked-text))))
 
 (defstruct org-velocity-heading buffer position name level preview)
 
