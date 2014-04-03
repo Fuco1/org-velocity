@@ -159,6 +159,11 @@ Otherwise just go to its definition normally."
   :group 'org-velocity
   :type 'boolean)
 
+(defcustom org-velocity-follow-single-result t
+  "If there is only one search result, automatically follow."
+  :group 'org-velocity
+  :type 'boolean)
+
 (defun org-velocity-grab-preview ()
   "Grab preview of a subtree.
 The length of the preview is determined by `window-width'.
@@ -501,7 +506,8 @@ If ASK is non-nil, ask first."
         (:new (unless (org-velocity-create search :ask t)
                 (org-velocity-read nil search)))
         (:force (org-velocity-create search))
-        (:follow (if (y-or-n-p "One match, follow? ")
+        (:follow (if (or org-velocity-follow-single-result
+                         (y-or-n-p "One match, follow? "))
                      (progn
                        (set-buffer (org-velocity-match-buffer))
                        (goto-char (point-min))
