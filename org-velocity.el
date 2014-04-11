@@ -242,7 +242,7 @@ of the base buffer; in the latter, return the file name of
       (with-current-buffer (window-buffer (active-minibuffer-window))
         (minibuffer-contents))))
 
-(defsubst org-velocity-singlep (object)
+(defun org-velocity-singlep (object)
   "Return t when OBJECT is a list or sequence of one element."
   (if (consp object)
       (null (cdr object))
@@ -271,11 +271,11 @@ use it."
 
 (defvar org-velocity-bucket-buffer nil)
 
-(defsubst org-velocity-bucket-buffer ()
+(defun org-velocity-bucket-buffer ()
   (or org-velocity-bucket-buffer
       (find-file-noselect (org-velocity-bucket-file))))
 
-(defsubst org-velocity-match-buffer ()
+(defun org-velocity-match-buffer ()
   "Return the proper buffer for Org-Velocity to display in."
   (get-buffer-create org-velocity-match-buffer-name))
 
@@ -358,7 +358,7 @@ use it."
 (define-button-type 'org-velocity-button
   'action #'org-velocity-visit-button)
 
-(defsubst org-velocity-buttonize (heading)
+(defun org-velocity-buttonize (heading)
   "Insert HEADING as a text button with no hints."
   (insert-text-button
    (propertize (org-velocity-heading-name heading) 'face 'link)
@@ -366,7 +366,7 @@ use it."
    'match heading
    'search org-velocity-search))
 
-(defsubst org-velocity-insert-preview (heading)
+(defun org-velocity-insert-preview (heading)
   (when org-velocity-show-previews
     (insert-char ?\  1)
     (insert
@@ -374,7 +374,7 @@ use it."
       (org-velocity-heading-preview heading)
       'face 'shadow))))
 
-(defsubst* org-velocity-present-match (&key hint match)
+(defun* org-velocity-present-match (&key hint match)
   (with-current-buffer (org-velocity-match-buffer)
     (when hint (insert "#" hint " "))
     (org-velocity-buttonize match)
