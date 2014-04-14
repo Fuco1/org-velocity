@@ -164,6 +164,20 @@ Otherwise just go to its definition normally."
   :group 'org-velocity
   :type 'boolean)
 
+(defcustom org-velocity-big-buffer-alist '((100000 . 2)
+                                           (250000 . 3))
+  "Minimal length of needle in big buffers.
+
+The format is an alist, mapping buffer length to minimal needle
+length.  The search is only started if the needle length is
+bigger than this number
+
+It is assumed this list is ordered by buffer length, starting
+with the lowest value."
+  :group 'org-velocity
+  :type '(alist :key-type (integer :tag "Buffer length")
+                :value-type (integer :tag "Needle length")))
+
 (defun org-velocity-grab-preview ()
   "Grab preview of a subtree.
 The length of the preview is determined by `window-width'.
@@ -430,7 +444,17 @@ If HIDE-HINTS is non-nil, display entries without indices. SEARCH
 binds `org-velocity-search'.
 
 Return matches."
-  (if (and (stringp search) (not (string= "" search)))
+  (if (and (stringp search)
+           (not (string= "" search))
+           (let ((bs (with-current-buffer (org-velocity-bucket-buffer)
+                       (buffer-size)))
+                 (min-size 1)
+                 (limits org-velocity-big-buffer-alist))
+             (while (and limits
+                         (> bs (caar limits)))
+               (setq min-size (cdar limits))
+               (pop limits))
+             (>= (length search) min-size)))
       ;; Fold case when the search string is all lowercase.
       (let ((case-fold-search (equal search (downcase search)))
             (truncate-partial-width-windows t))
