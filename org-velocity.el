@@ -725,7 +725,9 @@ file. Calling with ARG forces current file."
     ;; complain if inappropriate
     (assert (org-velocity-bucket-file))
     (let ((org-velocity-bucket-buffer
-           (find-file-noselect (org-velocity-bucket-file))))
+           (if (buffer-file-name)
+               (find-file-noselect (org-velocity-bucket-file))
+             (current-buffer))))
       (unwind-protect
           (let ((dabbrev-search-these-buffers-only
                  (list (org-velocity-bucket-buffer))))
