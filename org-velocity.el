@@ -350,7 +350,8 @@ use it."
                         (buffer-file-name
                          (org-velocity-heading-buffer heading)))))))
     (pop-to-buffer (org-velocity-heading-buffer heading))
-    (goto-char (org-velocity-heading-position heading))))
+    (goto-char (org-velocity-heading-position heading))
+    (org-show-context)))
 
 (defun org-velocity-dismiss ()
   "Save current entry and close indirect buffer."
