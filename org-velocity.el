@@ -746,7 +746,7 @@ will be used; otherwise, this will work when called in any Org
 file. Calling with ARG forces current file."
   (interactive "P")
   (let ((org-velocity-always-use-bucket
-     (if arg nil org-velocity-always-use-bucket)))
+         (if arg nil org-velocity-always-use-bucket)))
     ;; complain if inappropriate
     (assert (org-velocity-bucket-file))
     (let ((org-velocity-bucket-buffer
@@ -761,8 +761,8 @@ file. Calling with ARG forces current file."
                  (org-velocity-incremental-read "Velocity search: ")
                (org-velocity-read-string "Velocity search: " search))))
         (progn
-          (kill-buffer (org-velocity-match-buffer))
-          (delete-other-windows))))))
+          (with-current-buffer (org-velocity-match-buffer)
+            (kill-buffer-and-window)))))))
 
 (defalias 'org-velocity-read 'org-velocity)
 

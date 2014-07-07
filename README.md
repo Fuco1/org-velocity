@@ -8,3 +8,4 @@ This is a "fork" of `org-velocity.el` from `org-contrib`.  To me, the original v
 * When there's just one result, follow it immediately (customizable)
 * Don't visit results in indirect buffer (why the hell!).  Just pop to the buffer at the header containing result.  Even if plainly insane, I left the original behaviour as opt-in customize
 * When the result is in a folded subtree, unfold the resulting header and its parents up to the level 1 header.
+* Don't break window-configuration.  Whose brilliant idea was it to call `delete-other-windows`???
