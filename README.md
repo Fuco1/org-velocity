@@ -1,3 +1,7 @@
+# Deprecation warning
+
+This project is deprecated in favour of [sallet](https://github.com/Fuco1/sallet).
+
 # org-velocity
 
 This is a "fork" of `org-velocity.el` from `org-contrib`.  To me, the original version behaves just plain insanely.  Maybe it tries to model itself after original, which is also insane, I don't know.  This fork fixes things that bothered me.  Here's a list
